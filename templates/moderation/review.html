@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Review: {{ resource.title }} - {{ PLATFORM_NAME }}{% endblock %}
+{% block content %}
+<div class="lr-inner lr-page">
+  <p><a href="{% url 'moderation:queue' %}">&larr; Back to queue</a></p>
+  <div class="lr-pagehead d-flex align-items-center flex-wrap gap-3">
+    <h1>{{ resource.title }}</h1>
+    <span class="lr-pill {{ resource.status }}">{{ resource.get_status_display }}</span>
+  </div>
+
+  <div class="lr-grid">
+    <div>
+      <section class="lr-section">
+        <h2>The file</h2>
+        <dl class="lr-facts">
+          <dt>Original name</dt><dd>{{ resource.original_filename }}</dd>
+          <dt>Type and size</dt><dd><span class="lr-type">{{ resource.type_label }}</span> {{ resource.size_label }}</dd>
+          <dt>Security scan</dt>
+          <dd><span class="lr-pill {% if resource.scan_status == 'pending' %}scanpending{% else %}{{ resource.scan_status }}{% endif %}">{{ resource.get_scan_status_display }}</span>
+            {% if resource.scan_detail %}<span class="lr-muted small">{{ resource.scan_detail }}</span>{% endif %}</dd>
+        </dl>
+        {% if dev_unscanned and resource.file %}
+        <div class="lr-flash warning mt-3">The scan has not confirmed this file is clean.
+          {% if can_approve %}Approval is allowed only because this server is in development mode.{% else %}It cannot be approved until a scan passes.{% endif %}
+          Read the file carefully before approving.</div>
+        {% endif %}
+        <div class="lr-actions mt-3">
+          {% if resource.file %}<a class="lr-btn" href="{% url 'resources:download' resource.pk %}">Download to review</a>{% endif %}
+          {% if resource.file %}
+          <form method="post" action="{% url 'moderation:rescan' resource.pk %}">{% csrf_token %}<button class="lr-btn lr-ghost" type="submit">Run security scan again</button></form>
+          {% endif %}
+        </div>
+        <p class="lr-help mt-2">The scan finds viruses. It cannot tell whether content is appropriate or relevant, so open the file and check it yourself.</p>
+      </section>
+
+      <section class="lr-section">
+        <h2>Description and course</h2>
+        <dl class="lr-facts">
+          <dt>Course</dt><dd>{{ resource.course.code }} - {{ resource.course.title }}</dd>
+          <dt>Type</dt><dd>{{ resource.category.name }}</dd>
+          <dt>Tags</dt><dd>{% for t in tags %}<span class="lr-type me-1">{{ t.name }}</span>{% empty %}<span class="lr-muted">None</span>{% endfor %}</dd>
+          <dt>Description</dt><dd>{% if resource.description %}{{ resource.description|linebreaksbr }}{% else %}<span class="lr-muted">None</span>{% endif %}</dd>
+        </dl>
+      </section>
+    </div>
+
+    <aside>
+      <section class="lr-section">
+        <h2>Uploader</h2>
+        <dl class="lr-facts">
+          <dt>Name</dt><dd>{{ resource.uploader.get_full_name|default:resource.uploader.username }}</dd>
+          <dt>Role</dt><dd>{{ resource.uploader.get_role_display }}</dd>
+          <dt>Verified</dt><dd>{% if resource.uploader.is_verified %}Yes{% else %}No{% endif %}</dd>
+          <dt>Uploaded</dt><dd>{{ resource.created_at|date:"j M Y, H:i" }}</dd>
+        </dl>
+      </section>
+
+      <section class="lr-section">
+        <h2>Decision</h2>
+        {% if resource.status == 'pending' %}
+        <form method="post" action="{% url 'moderation:approve' resource.pk %}" class="mb-3">{% csrf_token %}
+          <button class="lr-btn lr-block" type="submit"{% if not can_approve %} disabled{% endif %}>Approve and publish</button>
+        </form>
+        {% endif %}
+        {% if resource.status == 'approved' %}
+        <form method="post" action="{% url 'moderation:hide' resource.pk %}" class="mb-3">{% csrf_token %}<button class="lr-btn lr-ghost lr-block" type="submit">Hide from students</button></form>
+        {% elif resource.status == 'hidden' %}
+        <form method="post" action="{% url 'moderation:restore' resource.pk %}" class="mb-3">{% csrf_token %}<button class="lr-btn lr-ghost lr-block" type="submit">Make visible again</button></form>
+        {% endif %}
+        {% if resource.status != 'rejected' %}
+        <form method="post" action="{% url 'moderation:reject' resource.pk %}">{% csrf_token %}
+          <div class="lr-field"><label for="reason">Reason for rejecting</label>
+            <textarea class="form-control" id="reason" name="reason" rows="3" required minlength="5" maxlength="500"></textarea>
+            <div class="lr-help">The uploader will see this.</div></div>
+          <button class="lr-btn lr-danger lr-block" type="submit">Reject</button>
+        </form>
+        {% else %}
+        <p class="mb-0"><strong>Rejected:</strong> {{ resource.rejection_reason }}</p>
+        {% endif %}
+        {% if resource.reviewed_by %}<p class="lr-help mt-3 mb-0">Last decision by {{ resource.reviewed_by.username }}, {{ resource.reviewed_at|date:"j M Y, H:i" }}.</p>{% endif %}
+      </section>
+    </aside>
+  </div>
+</div>
+{% endblock %}

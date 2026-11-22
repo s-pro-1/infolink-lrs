@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Browse - {{ PLATFORM_NAME }}{% endblock %}
+{% block content %}
+<div class="lr-inner lr-page">
+  <div class="lr-pagehead"><h1>Browse materials</h1></div>
+  <form method="get" class="lr-toolbar" role="search">
+    <div><label for="q">Search</label><input class="form-control" id="q" name="q" value="{{ q }}" placeholder="Title, topic, course code"></div>
+    <div><label for="course">Course</label>
+      <select class="form-select" id="course" name="course"><option value="">All courses</option>
+        {% for c in courses %}<option value="{{ c.id }}"{% if course_id == c.id|stringformat:"s" %} selected{% endif %}>{{ c.code }} - {{ c.title }}</option>{% endfor %}
+      </select></div>
+    <div><label for="category">Type</label>
+      <select class="form-select" id="category" name="category"><option value="">All types</option>
+        {% for c in categories %}<option value="{{ c.id }}"{% if category_id == c.id|stringformat:"s" %} selected{% endif %}>{{ c.name }}</option>{% endfor %}
+      </select></div>
+    <button class="lr-btn" type="submit">Search</button>
+  </form>
+
+  {% if page.object_list %}
+  <p class="lr-muted">{{ page.paginator.count }} result{{ page.paginator.count|pluralize }}</p>
+  <div class="lr-cards">{% for r in page.object_list %}{% include "resources/_card.html" %}{% endfor %}</div>
+  {% if page.has_other_pages %}
+  <nav class="lr-pager" aria-label="Pages">
+    {% if page.has_previous %}<a class="lr-btn lr-ghost" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page.previous_page_number }}">Previous</a>{% endif %}
+    <span class="lr-muted">Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+    {% if page.has_next %}<a class="lr-btn lr-ghost" href="?{% if querystring %}{{ querystring }}&{% endif %}page={{ page.next_page_number }}">Next</a>{% endif %}
+  </nav>
+  {% endif %}
+  {% else %}
+  <div class="lr-empty">
+    {% if q or course_id or category_id %}
+    <strong>No materials match your search</strong>
+    Try fewer words, or clear the course and type filters. <a href="{% url 'resources:browse' %}">Clear filters</a>
+    {% else %}
+    <strong>No approved materials yet</strong>
+    Shared files appear here after a moderator approves them.
+    {% if user.is_student or user.is_lecturer %}<div class="mt-3"><a class="lr-btn" href="{% url 'resources:upload' %}">Upload the first one</a></div>{% endif %}
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

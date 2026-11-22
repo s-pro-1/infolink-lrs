@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ resource.title }} - {{ PLATFORM_NAME }}{% endblock %}
+{% block content %}
+<div class="lr-inner lr-page">
+  <p><a href="{% url 'resources:browse' %}">&larr; Back to browse</a></p>
+  <div class="lr-pagehead"><h1>{{ resource.title }}</h1></div>
+  {% if not resource.is_approved %}
+  <div class="lr-flash warning">This file is <strong>{{ resource.get_status_display|lower }}</strong> and is not visible to other students.
+    {% if resource.rejection_reason %}Reason: {{ resource.rejection_reason }}{% endif %}</div>
+  {% endif %}
+  <div class="lr-grid">
+    <section class="lr-section">
+      {% if resource.description %}<p class="lr-measure">{{ resource.description|linebreaksbr }}</p>{% endif %}
+      <div class="lr-actions">
+        {% if can_download %}<a class="lr-btn" href="{% url 'resources:download' resource.pk %}">Download ({{ resource.size_label }})</a>{% endif %}
+        {% if user.is_moderator %}<a class="lr-btn lr-ghost" href="{% url 'moderation:review' resource.pk %}">Open in review</a>{% endif %}
+      </div>
+      {% if tags %}<p class="mt-3 mb-0">{% for t in tags %}<span class="lr-type me-1">{{ t.name }}</span>{% endfor %}</p>{% endif %}
+    </section>
+    <aside class="lr-section">
+      <h2>Details</h2>
+      <dl class="lr-facts">
+        <dt>Course</dt><dd>{{ resource.course.code }} - {{ resource.course.title }}</dd>
+        <dt>Type</dt><dd>{{ resource.category.name }}</dd>
+        <dt>File</dt><dd><span class="lr-type">{{ resource.type_label }}</span> {{ resource.size_label }}</dd>
+        <dt>Shared by</dt><dd>{{ resource.uploader.get_full_name|default:resource.uploader.username }}</dd>
+        <dt>Added</dt><dd>{{ resource.created_at|date:"j M Y" }}</dd>
+        <dt>Downloads</dt><dd>{{ resource.download_count }}</dd>
+      </dl>
+    </aside>
+  </div>
+</div>
+{% endblock %}

@@ -3,12 +3,12 @@
 A learning resource sharing platform with personalized recommendations, built as a
 final-year project for Infolink University College (initial campus: Hawassa).
 
-**Status:** Increment 1 complete (foundation, accounts, roles, academic structure, profiles).
+**Status:** Increments 1-2 complete (accounts, roles, academic structure, profiles, document upload, validation, malware-scan hook, moderation).
 See `docs/ROADMAP.md` for what comes next.
 
 ## Stack
 Django 5.2 · Bootstrap 5 · PostgreSQL (production) / SQLite (local) · WhiteNoise · Render.
-Private S3-compatible storage (Cloudflare R2) arrives with uploads in Increment 2.
+Uploads are stored in a private folder (`private_media/`) for now; private S3-compatible storage (Cloudflare R2) is added at deployment.
 
 ## Quick start (local)
 ```bash
@@ -21,6 +21,20 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 Open http://127.0.0.1:8000/ . No cloud account is needed locally.
+
+## Uploads and moderation
+1. A verified student or lecturer uploads a file (PDF, DOC, DOCX, PPT, PPTX, TXT, default max 20 MB).
+2. The server checks the real file contents, not just the name, then stores it under a random name in `private_media/`.
+3. It is scanned with ClamAV if configured. **If no scanner answers, the file is never marked clean.**
+4. A moderator (role set by an admin) opens **Review**, checks the file, and approves or rejects with a reason.
+5. Only approved files appear in Browse. All downloads go through Django, which checks permissions.
+
+To try it locally: verify a student in `/admin/`, create a second user and set its **Role** to *Moderator*
+(and tick Verified), then log in as each. In development mode a moderator may approve a file the scanner
+could not check; in production this is off.
+
+Optional ClamAV (Fedora): `sudo dnf install clamd clamav-update`, then set
+`RESOURCE_SCANNER=apps.resources.scanning.ClamAVScanner` and `CLAMAV_HOST=127.0.0.1` (or `CLAMAV_UNIX_SOCKET`) in `.env`.
 
 ## Tests
 ```bash
@@ -54,5 +68,7 @@ apps/
   core/       landing, dashboard, health check, branding
   accounts/   custom User (roles), profiles, auth views, login throttle
   academics/  campus, department, program, course, semester, enrollment
+  resources/  upload, validation, scanning, private storage, browse, download
+  moderation/ review queue, approve/reject/hide, rules
 docs/       architecture, assumptions, roadmap
 ```

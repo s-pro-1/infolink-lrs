@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Not found - {{ PLATFORM_NAME }}{% endblock %}
+{% block content %}
+<div class="lr-inner lr-page"><div class="lr-measure">
+  <h1>We could not find that page</h1>
+  <p class="lr-muted">The link may be wrong, or the material may not be available to you.</p>
+  <a class="lr-btn" href="{% url 'resources:browse' %}">Browse materials</a>
+</div></div>
+{% endblock %}

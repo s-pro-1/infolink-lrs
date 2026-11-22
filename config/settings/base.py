@@ -31,6 +31,8 @@ INSTALLED_APPS = [
     "apps.core",
     "apps.accounts",
     "apps.academics",
+    "apps.resources",
+    "apps.moderation",
 ]
 
 MIDDLEWARE = [
@@ -94,6 +96,24 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# ---- Resource uploads -------------------------------------------------------
+# Private folder: never served by the web server or MEDIA_URL. Files leave it
+# only through Django views that check permissions. Replaced by private cloud
+# storage at deployment (see apps/resources/storage.py).
+PRIVATE_MEDIA_ROOT = Path(env("PRIVATE_MEDIA_ROOT", str(BASE_DIR / "private_media")))
+MAX_UPLOAD_MB = int(env("MAX_UPLOAD_MB", "20"))
+UPLOADS_PER_HOUR = int(env("UPLOADS_PER_HOUR", "20"))
+
+# Malware scanning. Leave RESOURCE_SCANNER empty when no scanner is available:
+# files then stay "pending" and unscanned (never marked safe).
+RESOURCE_SCANNER = env("RESOURCE_SCANNER", "")  # e.g. apps.resources.scanning.ClamAVScanner
+CLAMAV_HOST = env("CLAMAV_HOST", "")
+CLAMAV_PORT = int(env("CLAMAV_PORT", "3310"))
+CLAMAV_UNIX_SOCKET = env("CLAMAV_UNIX_SOCKET", "")
+CLAMAV_TIMEOUT = int(env("CLAMAV_TIMEOUT", "20"))
+# Moderators may approve a file whose scan was unavailable. Development only.
+ALLOW_APPROVE_WITHOUT_SCAN = False
 
 # Institution branding is configuration, not hardcoded identity.
 PLATFORM_NAME = env("PLATFORM_NAME", "Learning Resource Hub")

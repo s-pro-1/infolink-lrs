@@ -3,6 +3,8 @@ from django.db import connection
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 
+from apps.resources.models import Resource
+
 
 def home(request):
     if request.user.is_authenticated:
@@ -32,7 +34,12 @@ def dashboard(request):
         ctx.update(
             enrolled=enrolled, steps=steps, steps_done=done,
             steps_percent=round(100 * done / len(steps)),
+            course_materials=(Resource.objects.approved()
+                              .filter(course__in=enrolled)
+                              .select_related("course", "category").order_by("-created_at")[:6]),
         )
+    if user.is_moderator:
+        ctx["pending_count"] = Resource.objects.filter(status=Resource.Status.PENDING).count()
     return render(request, "core/dashboard.html", ctx)
 
 

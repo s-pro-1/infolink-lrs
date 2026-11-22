@@ -34,10 +34,16 @@
 
       <section class="lr-section">
         <h2>Materials for your courses</h2>
+        {% if course_materials %}
+        <div class="lr-cards">{% for r in course_materials %}{% include "resources/_card.html" %}{% endfor %}</div>
+        <p class="mt-3 mb-0"><a href="{% url 'resources:browse' %}">Browse all materials</a></p>
+        {% else %}
         <div class="lr-empty">
-          <strong>Nothing to show yet</strong>
-          Approved notes, exams and tutorials for your courses will be listed here once sharing opens.
+          <strong>Nothing approved for your courses yet</strong>
+          Approved notes, exams and tutorials appear here. You can help by sharing something you have.
+          <div class="mt-3"><a class="lr-btn" href="{% url 'resources:upload' %}">Upload material</a></div>
         </div>
+        {% endif %}
       </section>
     </div>
 
@@ -64,7 +70,17 @@
   {% else %}
   <section class="lr-section">
     <h2>Your account</h2>
-    <p class="lr-muted mb-0">You are signed in as {{ user.get_role_display|lower }}. Tools for your role will appear here as they are added.</p>
+    <p class="lr-muted">You are signed in as {{ user.get_role_display|lower }}.</p>
+    <div class="lr-actions">
+      {% if user.is_lecturer %}
+      <a class="lr-btn" href="{% url 'resources:upload' %}">Upload material</a>
+      <a class="lr-btn lr-ghost" href="{% url 'resources:mine' %}">My uploads</a>
+      {% endif %}
+      {% if user.is_moderator %}
+      <a class="lr-btn" href="{% url 'moderation:queue' %}">Review queue{% if pending_count %}<span class="lr-badge">{{ pending_count }}</span>{% endif %}</a>
+      {% endif %}
+      <a class="lr-btn lr-ghost" href="{% url 'resources:browse' %}">Browse materials</a>
+    </div>
   </section>
   {% endif %}
 </div>

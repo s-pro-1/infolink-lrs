@@ -1,0 +1,10 @@
+<article class="lr-card">
+  <h3><a href="{% url 'resources:detail' r.pk %}">{{ r.title }}</a></h3>
+  <p><strong>{{ r.course.code }}</strong> &middot; {{ r.category.name }}</p>
+  {% if r.description %}<p>{{ r.description|truncatechars:110 }}</p>{% endif %}
+  <div class="lr-meta">
+    <span class="lr-type">{{ r.type_label }}</span>
+    <span>{{ r.size_label }}</span>
+    <span>{{ r.download_count }} download{{ r.download_count|pluralize }}</span>
+  </div>
+</article>

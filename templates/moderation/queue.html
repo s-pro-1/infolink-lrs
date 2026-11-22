@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Review queue - {{ PLATFORM_NAME }}{% endblock %}
+{% block content %}
+<div class="lr-inner lr-page">
+  <div class="lr-pagehead"><h1>Review queue</h1></div>
+  <nav class="lr-tabs" aria-label="Filter by status">
+    <a href="?show=pending"{% if show == 'pending' %} aria-current="page"{% endif %}>Waiting{% if counts.pending %}<span class="lr-badge">{{ counts.pending }}</span>{% endif %}</a>
+    <a href="?show=approved"{% if show == 'approved' %} aria-current="page"{% endif %}>Approved</a>
+    <a href="?show=rejected"{% if show == 'rejected' %} aria-current="page"{% endif %}>Rejected</a>
+  </nav>
+  {% if items %}
+  <div class="lr-tablewrap"><table class="lr-table">
+    <thead><tr><th>Title</th><th>Course</th><th>Uploaded by</th><th>Security scan</th><th>Date</th><th><span class="visually-hidden">Action</span></th></tr></thead>
+    <tbody>
+    {% for r in items %}
+    <tr>
+      <td><a href="{% url 'moderation:review' r.pk %}">{{ r.title }}</a><br><span class="lr-type">{{ r.type_label }}</span> <span class="lr-muted small">{{ r.size_label }}</span></td>
+      <td>{{ r.course.code }}</td>
+      <td>{{ r.uploader.username }}</td>
+      <td><span class="lr-pill {% if r.scan_status == 'pending' %}scanpending{% else %}{{ r.scan_status }}{% endif %}">{{ r.get_scan_status_display }}</span></td>
+      <td>{{ r.created_at|date:"j M, H:i" }}</td>
+      <td><a class="lr-btn lr-ghost" href="{% url 'moderation:review' r.pk %}">Review</a></td>
+    </tr>
+    {% endfor %}
+    </tbody></table></div>
+  {% else %}
+  <div class="lr-empty"><strong>{% if show == 'pending' %}Nothing is waiting for review{% else %}Nothing here yet{% endif %}</strong>New uploads appear here as soon as students and lecturers submit them.</div>
+  {% endif %}
+</div>
+{% endblock %}

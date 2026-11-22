@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}No access - {{ PLATFORM_NAME }}{% endblock %}
+{% block content %}
+<div class="lr-inner lr-page"><div class="lr-measure">
+  <h1>You do not have access to this page</h1>
+  <p class="lr-muted">This page is for moderators. If you think you should have access, ask an administrator.</p>
+  <a class="lr-btn" href="{% url 'core:home' %}">Go to your dashboard</a>
+</div></div>
+{% endblock %}

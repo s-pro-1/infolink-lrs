@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Upload - {{ PLATFORM_NAME }}{% endblock %}
+{% block content %}
+<div class="lr-inner lr-page">
+  <div class="lr-pagehead"><h1>Upload material</h1></div>
+  <div class="lr-measure">
+    <p class="lr-muted">A moderator reviews every file before other students can see it. Until then only you and moderators can open it.</p>
+    <form method="post" enctype="multipart/form-data" novalidate>{% csrf_token %}
+      {% include "accounts/_form.html" with form=form %}
+      <button class="lr-btn" type="submit">Upload for review</button>
+      <a class="lr-btn lr-ghost" href="{% url 'resources:mine' %}">Cancel</a>
+    </form>
+  </div>
+</div>
+<script>
+  // Suggest a title from the file name when the title is still empty.
+  (function () {
+    var file = document.getElementById("id_file"), title = document.getElementById("id_title");
+    if (!file || !title) return;
+    file.addEventListener("change", function () {
+      if (title.value.trim() || !file.files.length) return;
+      title.value = file.files[0].name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim();
+    });
+  })();
+</script>
+{% endblock %}

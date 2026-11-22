@@ -3,8 +3,8 @@
 | # | Scope | Status |
 |---|-------|--------|
 | 1 | Foundation, settings split, custom user + roles, academic models, registration/login/profile, course selection, tests | **Done** |
-| 2 | Document upload + validation (extension, MIME, signature, size), private storage, ClamAV hook, moderation queue | Next |
-| 3 | Video links (YouTube), discovery, search/filter/sort, authorized downloads | |
+| 2 | Document upload + validation (extension, signature, size), private storage, ClamAV hook, moderation queue | **Done** |
+| 3 | Video links (YouTube), sorting and more filters, downloads history | Next |
 | 4 | Content-based recommendations (configurable weights), bookmarks, ratings, reviews, notifications | |
 | 5 | Admin dashboard and analytics, reports, audit log, security hardening | |
 | 6 | Full test pass on PostgreSQL, deployment, report chapters, demo | |

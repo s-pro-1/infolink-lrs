@@ -1,7 +1,13 @@
 <a href="{% url 'core:about' %}"{% if request.resolver_match.url_name == 'about' %} aria-current="page"{% endif %}>About</a>
 {% if user.is_authenticated %}
   <a href="{% url 'core:dashboard' %}"{% if request.resolver_match.url_name == 'dashboard' %} aria-current="page"{% endif %}>Dashboard</a>
-  <a href="{% url 'accounts:profile' %}"{% if request.resolver_match.url_name == 'profile' %} aria-current="page"{% endif %}>My profile</a>
+  <a href="{% url 'resources:browse' %}"{% if request.resolver_match.url_name == 'browse' %} aria-current="page"{% endif %}>Browse</a>
+  {% if user.is_student or user.is_lecturer %}
+  <a href="{% url 'resources:upload' %}"{% if request.resolver_match.url_name == 'upload' %} aria-current="page"{% endif %}>Upload</a>
+  <a href="{% url 'resources:mine' %}"{% if request.resolver_match.url_name == 'mine' %} aria-current="page"{% endif %}>My uploads</a>
+  {% endif %}
+  {% if user.is_moderator %}<a href="{% url 'moderation:queue' %}"{% if request.resolver_match.app_name == 'moderation' %} aria-current="page"{% endif %}>Review</a>{% endif %}
+  <a href="{% url 'accounts:profile' %}"{% if request.resolver_match.url_name == 'profile' %} aria-current="page"{% endif %}>Profile</a>
   {% if user.is_staff %}<a href="{% url 'admin:index' %}">Admin</a>{% endif %}
   <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}
     <button class="lr-link" type="submit">Log out</button>

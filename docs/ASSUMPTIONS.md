@@ -23,3 +23,18 @@ Nothing here is verified Infolink policy. Items marked **ASK** need a real answe
 - Does the university have rules on sharing past exams and lecturer materials?
 - Is a university email domain available for automatic verification?
 - Who will moderate after the project is handed over?
+
+## Increment 2 decisions
+- Files are stored on local disk in `private_media/` (outside the web root and MEDIA_URL) during development.
+  At deployment, replace `get_private_storage()` in `apps/resources/storage.py` with a private S3/R2 bucket.
+  Note: Render's disk is not persistent on the free tier, so cloud storage is required for production.
+- Documents and videos will share the `Resource` model; videos (Increment 3) reuse the same moderation flow.
+- Upload checks look at real file bytes (signature, Office package structure, macro/program entries, size).
+- Legacy `.doc`/`.ppt` are accepted but can carry macros; they rely on ClamAV and the moderator. Consider
+  dropping them if the institution does not need them.
+- Antivirus does not detect inappropriate content. Every file needs human approval (no auto-approval).
+- Without a configured scanner, files stay "scanner unavailable" and can only be approved in development mode.
+- Rejected infected files are deleted from storage; rejected clean files are kept so the uploader can see the reason.
+- Per-user upload limit: 20 per hour (configurable). Download counts exclude the uploader's own downloads.
+- Not built yet (later increments): notification to the uploader on approve/reject (Increment 4), reporting
+  resources (Increment 5), in-browser PDF preview (future).
