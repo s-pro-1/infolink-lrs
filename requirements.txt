@@ -1,0 +1,11 @@
+Django>=5.2,<6
+dj-database-url
+whitenoise
+gunicorn
+python-dotenv
+pillow
+# PostgreSQL driver for production / Render (not needed for local SQLite dev):
+psycopg2-binary
+# Added in Increment 2 for private cloud storage:
+# django-storages[s3]
+# pytest, pytest-django  (optional test runner)

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{% block page_title %}{% endblock %} - {{ PLATFORM_NAME }}{% endblock %}
+{% block content %}
+<div class="lr-auth">
+  <div class="lr-auth-side">
+    <h2>{% block side_heading %}Everything for your courses, in one place.{% endblock %}</h2>
+    <p>{% block side_text %}Notes, past exams and tutorials shared by students and lecturers, and checked by a moderator first.{% endblock %}</p>
+  </div>
+  <div class="lr-auth-main">
+    <div class="lr-auth-box">
+      <h1>{% block heading %}{% endblock %}</h1>
+      {% block body %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}

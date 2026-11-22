@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - {{ PLATFORM_NAME }}{% endblock %}
+{% block content %}
+<div class="lr-inner lr-page">
+  <div class="lr-pagehead">
+    <h1>Hello, {{ user.first_name|default:user.username }}</h1>
+  </div>
+
+  {% if user.is_lecturer and not user.is_verified %}
+  <div class="lr-flash warning">Your lecturer account is waiting for administrator verification. You can sign in, but uploading stays off until you are verified.</div>
+  {% elif user.is_student and not user.is_verified %}
+  <div class="lr-flash info">Your account has not been verified yet. You can set up your profile now; uploading opens once an administrator verifies you.</div>
+  {% endif %}
+
+  {% if user.is_student %}
+  <div class="lr-grid">
+    <div>
+      <section class="lr-section">
+        <h2>My courses</h2>
+        {% if enrolled %}
+        <ul class="lr-courselist">
+          {% for c in enrolled %}
+          <li><span class="lr-code">{{ c.code }}</span><span>{{ c.title }}</span></li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <div class="lr-empty">
+          <strong>No courses selected yet</strong>
+          Choose your courses on your profile so materials for them can be shown here.
+          <div class="mt-3"><a class="lr-btn" href="{% url 'accounts:profile' %}">Choose courses</a></div>
+        </div>
+        {% endif %}
+      </section>
+
+      <section class="lr-section">
+        <h2>Materials for your courses</h2>
+        <div class="lr-empty">
+          <strong>Nothing to show yet</strong>
+          Approved notes, exams and tutorials for your courses will be listed here once sharing opens.
+        </div>
+      </section>
+    </div>
+
+    <aside>
+      <section class="lr-section">
+        <h2>Set up your profile</h2>
+        <div class="lr-progress" role="progressbar" aria-valuemin="0" aria-valuemax="{{ steps|length }}" aria-valuenow="{{ steps_done }}" aria-label="Profile setup progress">
+          <div style="width: {{ steps_percent }}%"></div>
+        </div>
+        <ul class="lr-steps">
+          {% for s in steps %}
+          <li class="{% if s.done %}done{% endif %}">
+            <span class="lr-tick" aria-hidden="true">{% if s.done %}&#10003;{% endif %}</span>
+            <span class="lr-label">{{ s.label }}<span class="visually-hidden">{% if s.done %} (done){% else %} (to do){% endif %}</span></span>
+          </li>
+          {% endfor %}
+        </ul>
+        {% if steps_done < steps|length %}
+        <a class="lr-btn lr-ghost lr-block mt-2" href="{% url 'accounts:profile' %}">Edit profile</a>
+        {% endif %}
+      </section>
+    </aside>
+  </div>
+  {% else %}
+  <section class="lr-section">
+    <h2>Your account</h2>
+    <p class="lr-muted mb-0">You are signed in as {{ user.get_role_display|lower }}. Tools for your role will appear here as they are added.</p>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}My profile - {{ PLATFORM_NAME }}{% endblock %}
+{% block content %}
+<div class="lr-inner lr-page">
+  <div class="lr-pagehead"><h1>My profile</h1></div>
+  <form method="post" novalidate>{% csrf_token %}
+
+    <section class="lr-profile-section">
+      <div>
+        <h2>Account</h2>
+        <p class="lr-help">Your name and the email used to reach you. Other students never see your email.</p>
+      </div>
+      <div class="lr-measure">{% include "accounts/_form.html" with form=names_form %}</div>
+    </section>
+
+    {% if profile_form %}
+    <section class="lr-profile-section">
+      <div>
+        <h2>Where you study</h2>
+        <p class="lr-help">This decides which courses are offered below. Save once after choosing a department to see its courses.</p>
+      </div>
+      <div class="lr-measure">{% include "accounts/_form.html" with form=profile_form %}</div>
+    </section>
+
+    <section class="lr-profile-section">
+      <div>
+        <h2>Your courses</h2>
+        <p class="lr-help">Select every course you take this semester.</p>
+      </div>
+      <div>
+        {% if course_form.courses.field.queryset %}
+        <div class="lr-picks">
+          {% for choice in course_form.courses %}
+          <label class="lr-pick" for="{{ choice.id_for_label }}">
+            {{ choice.tag }}
+            <span>
+              <span class="lr-code">{{ choice.data.value.instance.code }}</span>
+              <small>{{ choice.data.value.instance.title }}</small>
+            </span>
+          </label>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="lr-empty"><strong>No courses to choose from yet</strong>Choose your department above and save. If the list is still empty, an administrator has not added courses for it yet.</div>
+        {% endif %}
+      </div>
+    </section>
+    {% endif %}
+
+    <div class="d-flex gap-2 flex-wrap pt-3">
+      <button class="lr-btn" type="submit">Save profile</button>
+      <a class="lr-btn lr-ghost" href="{% url 'accounts:password_change' %}">Change password</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

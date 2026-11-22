@@ -1,0 +1,12 @@
+{% extends "accounts/auth_layout.html" %}
+{% block page_title %}Create account{% endblock %}
+{% block heading %}Create your account{% endblock %}
+{% block side_heading %}Set up in a minute, then choose your courses.{% endblock %}
+{% block side_text %}Students can sign up directly. Lecturer accounts are checked by an administrator before they can upload.{% endblock %}
+{% block body %}
+<form method="post" novalidate>{% csrf_token %}
+  {% include "accounts/_form.html" with form=form %}
+  <button class="lr-btn lr-block" type="submit">Create account</button>
+</form>
+<p class="mt-3 mb-0">Already registered? <a href="{% url 'accounts:login' %}">Log in</a></p>
+{% endblock %}

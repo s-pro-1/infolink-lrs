@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="lr-hero">
+  <div class="lr-inner">
+    <div>
+      <h1>Course materials from your own classmates and lecturers, in one place.</h1>
+      <p>Find lecture notes, past exams and tutorials for the courses you take at {{ INSTITUTION_NAME }}. Every upload is checked by a moderator before you see it.</p>
+      <a class="lr-btn lr-on-dark" href="{% url 'accounts:register' %}">Create your account</a>
+      <a class="lr-btn lr-ghost-dark ms-2" href="{% url 'accounts:login' %}">Log in</a>
+    </div>
+    <ul class="lr-spines" aria-label="Kinds of material you can find">
+      <li class="lr-spine" style="--w: 100%">Lecture notes <small>PDF, Word, text</small></li>
+      <li class="lr-spine" style="--w: 92%">Past examinations <small>by course</small></li>
+      <li class="lr-spine" style="--w: 84%">Assignments <small>and study guides</small></li>
+      <li class="lr-spine" style="--w: 96%">Presentations <small>PowerPoint</small></li>
+      <li class="lr-spine" style="--w: 78%">Video tutorials <small>YouTube links</small></li>
+    </ul>
+  </div>
+</section>
+
+<div class="lr-inner">
+  <div class="lr-roles">
+    <div>
+      <h2>Students</h2>
+      <p>Pick your department and courses, then browse what others have shared. Add your own notes when you have something useful.</p>
+    </div>
+    <div>
+      <h2>Lecturers</h2>
+      <p>Share materials directly with the students taking your course. An administrator verifies lecturer accounts first.</p>
+    </div>
+    <div>
+      <h2>Moderators</h2>
+      <p>Review each upload, approve what is useful and give a reason when something is rejected.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
